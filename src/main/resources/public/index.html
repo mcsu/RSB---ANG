@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+</head>
+<body>
+	<p>Get list of unrented car</p>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$.get("/cars", function(data){
+				if(data.length>0) {
+					var u = $("#unrentedCars").append("<ul>");
+					for(var i=0;i<data.length;i++){
+						var car = data[i];
+						u.append("<li>" + car.id +"|" + car.description +"</li>");
+					}
+					$("#unrentedCars").append("</ul>");
+				}
+				else{
+					$("#unrentedCars").text("All car has been rented!");
+				}
+			});
+		});
+	</script>
+	<div id="unrentedCars"></div>
+	<hr>
+	<p>Add new car</p>
+	Description: <input type="text" id="description"/>
+	<button onclick="create()">Create</button>
+	<hr>
+	<p>Rent/Unrent car</p>
+	<input type="text" id="id"/>
+	<button onclick="updateCar()">Rent/Unrent</button>
+	<script type="text/javascript">
+		function create() {
+			var sDes = $("#description").val();
+			var oData = {};
+			oData.description = sDes;
+			oData.rented = false;
+			$.ajax({
+				  type: 'POST',
+				  url: '/cars',
+				  data: JSON.stringify(oData),
+				  contentType: 'application/json',
+				  success: function(){
+					  alert("Created");
+					  window.location.reload();
+				  },
+				  dataType: 'json'
+				});
+		}
+		
+		function updateCar() {
+			var sId = $("#id").val();
+			jQuery.ajax({
+				url: "/cars/" + sId,
+				method: "put",
+				contentType: "application/json;charset=UTF-8",
+				success: function() {
+					alert("updated");
+					window.location.reload();
+				}
+			});
+		}
+	</script>
+</body>
+</html>
